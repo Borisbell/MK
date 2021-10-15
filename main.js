@@ -18,10 +18,9 @@ const player2 = {
     }
 }
 
+const $arenas = document.querySelector('.arenas');
 
 function createPlayer(name, data){
-    const $arenas = document.querySelector('.arenas');
-
     const $player1 = document.createElement('div');
     $player1.classList.add(name);
 
