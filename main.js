@@ -44,7 +44,7 @@ function createPlayer(playerObj){
     $life.style.width = playerObj.hp +'%';
 
     const $name = createElement('div', 'name');
-    $name.innerHTML = playerObj.name;
+    $name.innerText = playerObj.name;
 
     $progressbar.appendChild($life);
     $progressbar.appendChild($name);
@@ -62,8 +62,8 @@ $arenas.appendChild(createPlayer(player2));
 
 function changeHP(player){
     const $playerLife = document.querySelector('.player' + player.player +' .life');
-    const hit = Math.ceil(Math.random() * 20);
-    if (player.hp <= 0){
+    const hit = Math.floor(Math.random() * 20) + 1;
+    if ((player.hp - hit) < 0){
         player.hp = 0;
         $randomButton.disabled = true;
     }
