@@ -5,7 +5,10 @@ const player1 = {
     weapon: ['Laser','Gun'],
     attack: function(){
         console.log(this.name + 'Fight!')
-    }
+    },
+    changeHP : changeHP,
+    renderHP : renderHP,
+    elHP: elHP,
 }
 
 const player2 = {
@@ -15,7 +18,10 @@ const player2 = {
     weapon: ['sword','dagger'],
     attack: function(){
         console.log(this.name + 'Fight!')
-    }
+    },
+    changeHP : changeHP,
+    renderHP : renderHP,
+    elHP: elHP,
 }
 
 const $arenas = document.querySelector('.arenas');
@@ -49,8 +55,92 @@ function createPlayer(name, data){
 
     $character.appendChild($img);
 
+<<<<<<< Updated upstream
     $arenas.appendChild($player1);
 }
 
 createPlayer('player1', player1);
 createPlayer('player2', player2);
+=======
+    return $player1;
+}
+
+function createReloadButton(){
+    const $reloadWrap = createElement('div', 'reloadWrap');
+    const $button = createElement('button', 'button');
+    $reloadWrap.appendChild($button);
+
+    $button.innerText = 'Restart';
+
+    $button.addEventListener('click', function(){
+        window.location.reload();
+    })
+
+    return $reloadWrap;
+}
+
+$arenas.appendChild(createPlayer(player1));
+$arenas.appendChild(createPlayer(player2));
+
+function changeHP(){
+    this.hp -= getRandom(20);
+
+    if(this.hp <= 0){
+        this.hp = 0;
+    }
+
+    return this.hp;
+}
+
+function elHP(){
+    return document.querySelector('.player' + this.player + ' .life');
+}
+
+function renderHP(){
+    const element = this.elHP();
+    element.style.width = this.changeHP() + '%';
+}
+
+function getRandom(num){
+    return Math.floor(Math.random() * num) + 1;
+}
+
+function playerWin(name){
+    const $winTitle = createElement('div', 'loseTitle')
+    if (name){
+        $winTitle.innerHTML = name + ' win';
+    } else {
+        $winTitle.innerHTML = 'draw';
+    }
+    
+    return $winTitle;
+}
+
+
+
+$randomButton.addEventListener('click', function(){
+    player1.changeHP();
+    player1.elHP();
+    player1.renderHP();
+
+    player2.changeHP();
+    player2.elHP();
+    player2.renderHP();
+
+    
+    if (player1.hp === 0 || player2.hp === 0){
+        $randomButton.disabled = true;
+    }
+
+    if (player1.hp === 0 && player1.hp < player2.hp){
+        $arenas.appendChild(playerWin(player2.name));
+        $arenas.appendChild(createReloadButton());
+    } else if (player2.hp === 0 && player2.hp < player1.hp){
+        $arenas.appendChild(playerWin(player1.name));
+        $arenas.appendChild(createReloadButton());
+    } else if (player2.hp === 0 && player2.hp === 0){
+        $arenas.appendChild(playerWin());
+        $arenas.appendChild(createReloadButton());
+    }
+});
+>>>>>>> Stashed changes
