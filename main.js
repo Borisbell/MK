@@ -183,15 +183,20 @@ $formFight.addEventListener('submit', function(e){
         item.checked = false;
     }
 
-    console.log(attack.value);
-    console.log(enemy.value);
+    if (enemy.hit != attack.defence){
+        player1.changeHP(attack.value);
+        player1.renderHp();
+        player1.elHP();
+    }
 
-    player1.changeHP(attack.value);
-    player2.changeHP(enemy.value);
-    player1.renderHp();
-    player2.renderHp();
-    player1.elHP();
-    player2.elHP();
+    if (enemy.defence != attack.hit){
+        player2.changeHP(enemy.value);
+        player2.renderHp();
+        player2.elHP();
+    }
+    
+   
+
 
 
     if (player1.hp === 0 || player2.hp === 0) {
