@@ -11,5 +11,7 @@ export function createElement(tag, className) {
 
 export function getTime(){
     const date = new Date();
-    return `[${date.getHours()}:${date.getMinutes()}]`;
+    const normalize = (num) => (num.toString().length > 1 ? num : `0${num}`);
+    const time = `${normalize(date.getHours())}:${normalize(date.getMinutes())}`
+    return time;
 }

@@ -124,6 +124,7 @@ function showResult(){
 function generateLogs(type, player1, player2){
     let text;
     const {start, end, hit, defence, draw} = logs;
+    
     switch(type) {
         case 'start':
             text = start.replace('[time]', getTime()).replace('[player1]', player1.name).replace('[player2]', player2.name);
