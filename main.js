@@ -158,14 +158,12 @@ $formFight.addEventListener('submit', function(e){
     if (player.defence != enemy.hit){
         player1.changeHP(enemy.value);
         player1.renderHp();
-        player1.elHP();
         generateLogs('hit', player2, player1);
     }
 
     if (enemy.defence != player.hit){
         player2.changeHP(player.value);
         player2.renderHp();
-        player2.elHP();
         generateLogs('hit', player1, player2);
     }
 
