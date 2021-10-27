@@ -1,7 +1,11 @@
+import {player1, player2 } from "./player.js";
+import {getTime, random, createElement} from "./utils.js";
+import {logs} from "./logs.js";
+
 const $arenas = document.querySelector('.arenas')
 const $randomButton = document.querySelector('.button');
-
 const $formFight = document.querySelector('.control');
+const $chat = document.querySelector('.chat');
 
 const HIT = {
     head: 30,
@@ -10,43 +14,6 @@ const HIT = {
 }
 
 const ATTACK = ['head', 'body', 'foot'];
-
-const player1 = {
-    name: 'subzero',
-    hp: 100,
-    player: 1,
-    img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
-    weapon: ['weapon1', 'weapon2', 'weapon3'],
-    attack: function() {
-        console.log(this.name + 'Fight...')},  
-    changeHP,
-    elHP,
-    renderHp,       
-};
-
-
-const player2 = {
-    name: 'liukang',
-    hp: 100,
-    player: 2,
-    img: 'http://reactmarathon-api.herokuapp.com/assets/liukang.gif',
-    weapon: ['weapon1', 'weapon2', 'weapon3'],
-    attack: function() {
-        console.log(this.name + 'Fight...')},  
-    changeHP,
-    elHP,
-    renderHp,      
-};
-
-function createElement(tag, className) {
-    const $tag = document.createElement(tag);
-    if (className) {
-        $tag.classList.add(className);
-    }
-
-    return $tag;
-}
-
 
 function createPlayer(playerObj) {
     const $player = createElement('div', 'player' + playerObj.player);
@@ -69,26 +36,6 @@ function createPlayer(playerObj) {
     $player.appendChild($character);
 
     return $player;
-
-
-}
-
-function changeHP() {
-    this.hp -= getRandom(20);
-    if (this.hp <= 0) {
-        this.hp = 0;
-    }
-    return this.hp;
-}
-
-function elHP() {
-    return document.querySelector('.player' + this.player + ' .life');
-
-}
-
-function renderHp() {
-    this.elHP().style.width = this.hp + '%';
-
 }
 
 function playerWins(name) {
@@ -100,10 +47,6 @@ function playerWins(name) {
     }
 
     return $winTitle;
-}
-
-function getRandom(number) {
-    return Math.ceil(Math.random() * number);
 }
 
 function reloadPage (btn) {
@@ -123,82 +66,43 @@ function createReloadButton() {
     
     reloadPage($reloadButton)
     return $reloadButton;
-
 }
-
-
-// $randomButton.addEventListener('click', function () {
-//     player1.changeHP(getRandom());
-//     player2.changeHP(getRandom());
-//     player1.renderHp();
-//     player2.renderHp();
-//     player1.elHP();
-//     player2.elHP();
-
-//     if (player1.hp === 0 || player2.hp === 0) {
-//         $randomButton.disabled = true;
-//         createReloadButton()
-//     }
-
-//     if (player1.hp === 0 && player1.hp < player2.hp) {
-//         $arenas.appendChild(playerWins(player2.name));
-//     } else if (player2.hp === 0 && player2.hp < player1.hp) {
-//         $arenas.appendChild(playerWins(player1.name));
-//     } else if (player1.hp === 0 && player2.hp === 0) {
-//         $arenas.appendChild(playerWins());
-//     }
-// })
 
 $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer(player2));
 
-function enemyAttack(){
-    const hit = ATTACK[getRandom(3)-1];
-    const defence = ATTACK[getRandom(3)-1];
+export function enemyAttack(){
+    const hit = ATTACK[random(3)-1];
+    const defence = ATTACK[random(3)-1];
 
     return {
-        value: getRandom(HIT[hit]),
+        value: random(HIT[hit]),
         hit,
         defence,
     }
 }
 
-$formFight.addEventListener('submit', function(e){
-    e.preventDefault();
-    const enemy = enemyAttack();
-
+export function playerAttack() {
     const attack = {};
 
     for(let item of $formFight) {
         if (item.checked && item.name === 'hit'){
-            attack.value = getRandom(HIT[item.value]);
+            attack.value = random(HIT[item.value]);
             attack.hit = item.value;
         }
 
         if (item.checked && item.name === 'defence'){
-            attack.value = getRandom(HIT[item.value]);
+            attack.value = random(HIT[item.value]);
             attack.defence = item.value;
         }
 
         item.checked = false;
     }
 
-    if (enemy.hit != attack.defence){
-        player1.changeHP(attack.value);
-        player1.renderHp();
-        player1.elHP();
-    }
+    return attack;
+}
 
-    if (enemy.defence != attack.hit){
-        player2.changeHP(enemy.value);
-        player2.renderHp();
-        player2.elHP();
-    }
-    
-   
-
-
-
+function showResult(){
     if (player1.hp === 0 || player2.hp === 0) {
         $randomButton.disabled = true;
         createReloadButton()
@@ -206,10 +110,66 @@ $formFight.addEventListener('submit', function(e){
 
     if (player1.hp === 0 && player1.hp < player2.hp) {
         $arenas.appendChild(playerWins(player2.name));
+        generateLogs('end', player2, player1);
     } else if (player2.hp === 0 && player2.hp < player1.hp) {
         $arenas.appendChild(playerWins(player1.name));
+        generateLogs('end', player1, player2);
     } else if (player1.hp === 0 && player2.hp === 0) {
         $arenas.appendChild(playerWins());
+        generateLogs('draw', player2, player1);
     }
+
+}
+
+function generateLogs(type, player1, player2){
+    let text;
+    const {start, end, hit, defence, draw} = logs;
     
+    switch(type) {
+        case 'start':
+            text = start.replace('[time]', getTime()).replace('[player1]', player1.name).replace('[player2]', player2.name);
+            break
+        case 'end':
+            text = end[random(3)].replace('[playerWins]', player1.name).replace('[playerLose]', player2.name);
+            break
+        case 'draw':
+            text = draw;
+            break
+        case 'hit':
+            text = `${getTime()} ${hit[random(17)].replace('[playerKick]', player1.name).replace('[playerDefence]', player2.name)} -${playerAttack().value}[${player1.hp}/100]`;
+            text = `${getTime()} ${hit[random(17)].replace('[playerKick]', player2.name).replace('[playerDefence]', player1.name)} -${enemyAttack().value}[${player2.hp}/100]`;
+            break
+        case 'defence':
+            text = getTime() + defence[random(7)].replace('[playerKick]', player2.name).replace('[playerDefence]', player1.name);
+            break
+    }
+    const el = `<p>${text}</p>`;
+    $chat.insertAdjacentHTML('afterbegin',el);
+}
+
+generateLogs('start', player2, player1);
+
+$formFight.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const enemy = enemyAttack();
+    const player = playerAttack();
+
+    if (player.defence != enemy.hit){
+        player1.changeHP(enemy.value);
+        player1.renderHp();
+        generateLogs('hit', player2, player1);
+    }
+
+    if (enemy.defence != player.hit){
+        player2.changeHP(player.value);
+        player2.renderHp();
+        generateLogs('hit', player1, player2);
+    }
+
+    if (player.defence === enemy.hit){
+        generateLogs('defence', player2, player1);
+    }
+
+    showResult();
 })
